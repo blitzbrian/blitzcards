@@ -4,15 +4,12 @@ import { Inter } from "next/font/google";
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 import { cn } from "@/lib/utils";
-import Head from "next/head";
 import Link from "next/link";
 
 export default function Home() {
+
     return (
         <>
-            <Head>
-                <title>blitzbrian</title>
-            </Head>
             <main
                 className={cn(
                     "flex flex-col items-center justify-center h-[100dvh] px-4 md:px-6 min-h-screen bg-background font-sans antialiased",
@@ -24,7 +21,8 @@ export default function Home() {
                         blitzcards
                     </h1>
                     <p className="text-xl md:text-2xl xl:text-3xl text-gray-600 dark:text-gray-400">
-                        The best way to learn words and short sentences. Boost your memory and master new languages effortlessly!
+                        The best way to learn words and short sentences. Boost
+                        your memory and master new languages effortlessly!
                     </p>
                     <Link href="/learn">
                         <Button className="mt-4">Get Started</Button>
