@@ -5,13 +5,13 @@ const Mark = dynamic(() => import("@/components/icons/Mark"));
 const Progress = dynamic(
     async () => (await import("@/components/ui/progress")).Progress
 );
+const Import = dynamic(() => import("@/components/import"));
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
 import Plus from "@/components/icons/Plus";
-import Import from "@/components/import";
 
 interface PopupData {
     showing: boolean;
@@ -31,8 +31,8 @@ export default function Test() {
     const [popupData, setPopupData] = useState<PopupData>({
         showing: false,
         correct: true,
-        answer: ''
-    })
+        answer: "",
+    });
 
     const router = useRouter();
 
@@ -47,7 +47,8 @@ export default function Test() {
 
     const submit = (e: FormEvent) => {
         e.preventDefault();
-        if (value.trim() === list[index * 2 + 1].trim()) {
+        const correct = value.trim() === list[index * 2 + 1].trim();
+        if (correct) {
             if (!list[(index + 1) * 2]) {
                 setRight(total);
                 router.push("/");
@@ -58,8 +59,20 @@ export default function Test() {
             setWrong(wrong + 1);
             setList([...list, list[index * 2], list[index * 2 + 1]]);
         }
-        setIndex(index + 1);
-        setValue("");
+        setPopupData({
+            showing: true,
+            correct,
+            answer: list[index * 2 + 1].trim(),
+        });
+        setTimeout(() => {
+            setPopupData({
+                showing: false,
+                correct,
+                answer: list[index * 2 + 1].trim(),
+            });
+            setIndex(index + 1);
+            setValue("");
+        }, 2000);
     };
 
     const newItem = () => {
@@ -95,12 +108,23 @@ export default function Test() {
                         <div className="flex w-full">
                             <Button className="ml-auto mb-0">Submit</Button>
                         </div>
-                        {/* <div className="flex absolute w-[30rem] h-32 bottom-0 left-0 rounded-lg bg-zinc-800">
-                            <h3>{popupData.answer}</h3>
-                            <div>
-                                {popupData.correct ? <Mark /> : <Check />}
-                            </div>
-                        </div> */}
+                        <div
+                            className="transition-all duration-200 flex absolute w-[30rem] bottom-0 left-0 rounded-lg bg-zinc-800 items-center overflow-hidden"
+                            style={{
+                                height: popupData.showing ? "8rem" : "0",
+                            }}
+                        >
+                            <>
+                                {popupData.correct ? (
+                                    <Mark className="ml-8 size-16 my-auto" />
+                                ) : (
+                                    <Check className="ml-8 size-16 my-auto" />
+                                )}
+                                <h3 className="ml-6 text-md">
+                                    {popupData.answer}
+                                </h3>
+                            </>
+                        </div>
                     </form>
                 </div>
             )}

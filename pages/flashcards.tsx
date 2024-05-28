@@ -5,13 +5,13 @@ const Mark = dynamic(() => import("@/components/icons/Mark"));
 const Progress = dynamic(
     async () => (await import("@/components/ui/progress")).Progress
 );
+const Import = dynamic(() => import("@/components/import"));
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Plus from "@/components/icons/Plus";
-import Import from "@/components/import";
 
 export default function Flashcards() {
     const [list, setList] = useState<string[]>(Array(8).fill(""));

@@ -5,13 +5,19 @@ const Mark = dynamic(() => import("@/components/icons/Mark"));
 const Progress = dynamic(
     async () => (await import("@/components/ui/progress")).Progress
 );
+const Import = dynamic(() => import("@/components/import"));
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Plus from "@/components/icons/Plus";
-import Import from "@/components/import";
+
+interface PopupData {
+    showing: boolean;
+    correct: boolean;
+    answer: string;
+}
 
 export default function Multiplechoice() {
     const [list, setList] = useState<string[]>(Array(8).fill(""));
@@ -21,6 +27,11 @@ export default function Multiplechoice() {
     const [right, setRight] = useState<number>(0);
     const [total, setTotal] = useState<number>(0);
     const [importing, setImporting] = useState<boolean>(false);
+    const [popupData, setPopupData] = useState<PopupData>({
+        showing: false,
+        correct: true,
+        answer: '',
+    });
 
     const router = useRouter();
 
@@ -38,7 +49,8 @@ export default function Multiplechoice() {
     };
 
     const click = (item: string) => {
-        if (item === list[index * 2 + 1]) {
+        const correct = item === list[index * 2 + 1]
+        if (correct) {
             if (!list[(index + 1) * 2]) {
                 setRight(total);
                 setList(Array(list.length + 2).fill("🎉"));
@@ -50,12 +62,23 @@ export default function Multiplechoice() {
                 return;
             }
             setRight(right + 1);
-            setIndex(index + 1);
         } else {
             setWrong(wrong + 1);
-            setIndex(index + 1);
-            setList([...list, list[index * 2], list[index * 2 + 1]]);
         }
+        setPopupData({
+            showing: true,
+            correct,
+            answer: list[index * 2 + 1].trim(),
+        });
+        setTimeout(() => {
+            setPopupData({
+                showing: false,
+                correct,
+                answer: list[index * 2 + 1].trim(),
+            });
+            setIndex(index + 1);
+            if(!correct) setList([...list, list[index * 2], list[index * 2 + 1]]);
+        }, 2000);
     };
 
     const getShuffledArr = (arr: any[]) => {
@@ -98,7 +121,7 @@ export default function Multiplechoice() {
                         <Check />
                         <b>{wrong}</b>
                     </div>
-                    <div className="relative w-96 h-60 rounded-lg border bg-card text-card-foreground shadow-md [overflow-wrap:break-word] flex flex-col items-center px-7 text-center">
+                    <div className="transition-all duration-1000 relative min-w-96 max-w-2/3 h-60 rounded-lg border bg-card text-card-foreground shadow-md [overflow-wrap:break-word] flex flex-col items-center px-7 text-center">
                         <h1 className="text-xl w-full mt-3 mb-1">
                             {list[index * 2]}
                         </h1>
@@ -115,6 +138,23 @@ export default function Multiplechoice() {
                                 </>
                             )
                         )}
+                        <div
+                            className="transition-all duration-200 flex absolute w-full bottom-0 left-0 rounded-lg bg-zinc-800 items-center overflow-hidden"
+                            style={{
+                                height: popupData.showing ? "100%" : "0",
+                            }}
+                        >
+                            <>
+                                {popupData.correct ? (
+                                    <Mark className="ml-8 size-16 my-auto" />
+                                ) : (
+                                    <Check className="ml-8 size-16 my-auto" />
+                                )}
+                                <h3 className="ml-6 text-md">
+                                    {popupData.answer}
+                                </h3>
+                            </>
+                        </div>
                     </div>
                 </div>
             )}
