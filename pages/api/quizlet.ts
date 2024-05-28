@@ -6,7 +6,7 @@ const cloudscraper = require('cloudscraper').defaults({
     },
 });
 
-export async function GET(
+export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse
 ) {
